@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_menu_app/menu_page.dart';
 
 class CreateLogPage extends StatefulWidget {
   const CreateLogPage({Key? key}) : super(key: key);
@@ -39,7 +40,7 @@ class _ScreenTwoState extends State<CreateLogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Burger Menu Example'),
+        title: Text('Create Logs'),
         leading: Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.menu),
@@ -56,7 +57,7 @@ class _ScreenTwoState extends State<CreateLogPage> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Menu Header',
+                'Menu',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -66,7 +67,12 @@ class _ScreenTwoState extends State<CreateLogPage> {
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
-              onTap: () {},
+              onTap: () { Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MenuScreen(),
+                  ),
+                );},
             ),
             ListTile(
               leading: Icon(Icons.settings),
@@ -152,14 +158,6 @@ class _ScreenTwoState extends State<CreateLogPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal.shade600,
               ),
-            ),
-            const SizedBox(height: 30),
-            const Divider(thickness: 2),
-            const SizedBox(height: 10),
-            TextButton.icon(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('Return to Menu'),
             ),
           ],
         ),

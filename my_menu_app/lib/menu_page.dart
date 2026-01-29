@@ -17,7 +17,7 @@ class MenuScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Welcome to Multi-Screen App',
+              'Maintenance Log Management Application',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -34,7 +34,7 @@ class MenuScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('Go to Screen One'),
+              child: const Text('View Logs'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
@@ -54,7 +54,7 @@ class MenuScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('Go to Screen Two'),
+              child: const Text('Create Log'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
