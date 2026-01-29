@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ScreenTwo extends StatefulWidget {
-  const ScreenTwo({Key? key}) : super(key: key);
+class CreateLogPage extends StatefulWidget {
+  const CreateLogPage({Key? key}) : super(key: key);
 
   @override
-  State<ScreenTwo> createState() => _ScreenTwoState();
+  State<CreateLogPage> createState() => _ScreenTwoState();
 }
 
-class _ScreenTwoState extends State<ScreenTwo> {
+class _ScreenTwoState extends State<CreateLogPage> {
   final TextEditingController _textController = TextEditingController();
 
   String userMessage = 'Enter text below and press submit';

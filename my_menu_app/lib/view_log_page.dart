@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ScreenOne extends StatefulWidget {
-  const ScreenOne({Key? key}) : super(key: key);
+class ViewLogPage extends StatefulWidget {
+  const ViewLogPage({Key? key}) : super(key: key);
 
   @override
-  State<ScreenOne> createState() => _ScreenOneState();
+  State<ViewLogPage> createState() => _ScreenOneState();
 }
 
-class _ScreenOneState extends State<ScreenOne> {
+class _ScreenOneState extends State<ViewLogPage> {
   String displayText = 'Hello from Screen One!';
   int buttonPressCount = 0;
 
@@ -22,7 +22,7 @@ class _ScreenOneState extends State<ScreenOne> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Screen One'),
+        title: const Text('View Logs'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),

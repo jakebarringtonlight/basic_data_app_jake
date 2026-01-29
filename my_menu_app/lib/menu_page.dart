@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_menu_app/create_log_page.dart';
+import 'package:my_menu_app/view_log_page.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -28,7 +30,7 @@ class MenuScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ScreenOne(),
+                    builder: (context) => const ViewLogPage(),
                   ),
                 );
               },
@@ -48,7 +50,7 @@ class MenuScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ScreenTwo(),
+                    builder: (context) => const CreateLogPage(),
                   ),
                 );
               },
