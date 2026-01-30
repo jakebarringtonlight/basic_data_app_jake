@@ -5,10 +5,10 @@ class CreateLogPage extends StatefulWidget {
   const CreateLogPage({Key? key}) : super(key: key);
 
   @override
-  State<CreateLogPage> createState() => _ScreenTwoState();
+  State<CreateLogPage> createState() => _CreateLogPageState();
 }
 
-class _ScreenTwoState extends State<CreateLogPage> {
+class _CreateLogPageState extends State<CreateLogPage> {
   final TextEditingController _textController = TextEditingController();
 
   String userMessage = 'Enter text below and press submit';

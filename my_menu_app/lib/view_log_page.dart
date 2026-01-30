@@ -4,19 +4,12 @@ class ViewLogPage extends StatefulWidget {
   const ViewLogPage({Key? key}) : super(key: key);
 
   @override
-  State<ViewLogPage> createState() => _ScreenOneState();
+  State<ViewLogPage> createState() => _ViewLogPageState();
 }
 
-class _ScreenOneState extends State<ViewLogPage> {
-  String displayText = 'Hello from Screen One!';
-  int buttonPressCount = 0;
+class _ViewLogPageState extends State<ViewLogPage> {
 
-  void updateText() {
-    setState(() {
-      buttonPressCount++;
-      displayText = 'Button pressed $buttonPressCount times';
-    });
-  }
+  List<Map<String, dynamic>> logs = [];
 
   @override
   Widget build(BuildContext context) {
@@ -24,60 +17,20 @@ class _ScreenOneState extends State<ViewLogPage> {
       appBar: AppBar(
         title: const Text('View Logs'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.teal.shade50,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.teal,
-                  width: 2,
-                ),
-              ),
-              child: Text(
-                displayText,
-                style: const TextStyle(fontSize: 20),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: updateText,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Update Text'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-            ),
-            const SizedBox(height: 15),
-            OutlinedButton(
-              onPressed: () {
-                setState(() {
-                  displayText = 'Hello from Screen One!';
-                  buttonPressCount = 0;
-                });
-              },
-              child: const Text('Reset'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Back to Menu'),
-            ),
-          ],
-        ),
-      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(20),
+        itemCount: logs.length,
+        itemBuilder: (context, logId){
+        final log = logs[logId];
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.event_note),
+            title: Text(log["id"] ?? ""),
+            subtitle: Text(log["date"] ?? ""),
+          ),
+         );
+        }
+      )
     );
   }
 }
