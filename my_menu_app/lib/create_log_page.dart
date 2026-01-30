@@ -21,7 +21,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Logs'),
+        title: Text('Create Log'),
         leading: Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.menu),
@@ -73,18 +73,52 @@ class _CreateLogPageState extends State<CreateLogPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // const SizedBox(height: 20),
-            // TextField(
-            //   controller: _datetextController,
-            //   decoration: InputDecoration(
-            //     labelText: 'Date',
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(8),
-            //     ),
-            //     prefixIcon: const Icon(Icons.message),
-            //   ),
-            // ),
+            
+            const SizedBox(height: 20),
+            TextField(
+              controller: _datetextController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Date',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.calendar_today_rounded),
+              ),
+              onTap: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1999),
+                  lastDate: DateTime(2030),
+                );
 
+                if (date == null) return;
+
+                final time = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+
+                if (time == null) return;
+
+                final dateTime = DateTime(
+                  date.year, 
+                  date.month, 
+                  date.day, 
+                  time.hour, 
+                  time.minute, 
+                );
+                
+                final dateTimeString = "${dateTime.day}/${dateTime.month}/${dateTime.year}  ${time.format(context)}";
+
+                setState(() {
+                  _datetextController.text = dateTimeString;
+                });
+
+              },
+            ),
+            
             const SizedBox(height: 20),
             TextField(
               controller: _registrationtextController,
@@ -93,19 +127,19 @@ class _CreateLogPageState extends State<CreateLogPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.message),
+                prefixIcon: const Icon(Icons.airplanemode_active_rounded),
               ),
             ),
 
             const SizedBox(height: 20),
             DropdownButtonFormField<String>(
-              value: maintenanceType,
+              initialValue: maintenanceType,
               decoration: InputDecoration(
                 labelText: 'Maintenance Type',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.build),
+                prefixIcon: const Icon(Icons.build_rounded),
               ),
               items: [
                 "Routine",
@@ -125,7 +159,6 @@ class _CreateLogPageState extends State<CreateLogPage> {
               },
             ),
 
-
             const SizedBox(height: 20),
             TextField(
               controller: _summarytextController,
@@ -134,7 +167,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.message),
+                prefixIcon: const Icon(Icons.title_rounded),
               ),
             ),
 
@@ -146,7 +179,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.message),
+                prefixIcon: const Icon(Icons.perm_identity_rounded),
               ),
             ),
 
@@ -158,7 +191,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.message),
+                prefixIcon: const Icon(Icons.notes_rounded),
               ),
             ),
           ],
