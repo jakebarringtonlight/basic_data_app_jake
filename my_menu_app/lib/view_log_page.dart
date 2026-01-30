@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_menu_app/login_page.dart';
 import 'package:my_menu_app/menu_page.dart';
 
 class ViewLogPage extends StatefulWidget {
@@ -46,7 +47,7 @@ class _ViewLogPageState extends State<ViewLogPage> {
               onTap: () { Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MenuScreen(),
+                    builder: (context) => const MenuPage(),
                   ),
                 );},
             ),
@@ -58,7 +59,12 @@ class _ViewLogPageState extends State<ViewLogPage> {
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
-              onTap: () {},
+              onTap: () {Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );},
             ),
           ],
         ),

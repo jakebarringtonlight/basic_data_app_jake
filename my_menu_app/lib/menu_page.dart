@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_menu_app/create_log_page.dart';
 import 'package:my_menu_app/view_log_page.dart';
+import 'package:my_menu_app/login_page.dart';
 
-class MenuScreen extends StatelessWidget {
-  const MenuScreen({Key? key}) : super(key: key);
+class MenuPage extends StatelessWidget {
+  const MenuPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class MenuScreen extends StatelessWidget {
               onTap: () { Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MenuScreen(),
+                    builder: (context) => const MenuPage(),
                   ),
                 );},
             ),
@@ -51,7 +52,12 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
-              onTap: () {},
+              onTap: () {Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );},
             ),
           ],
         ),

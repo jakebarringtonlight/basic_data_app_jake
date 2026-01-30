@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MenuScreen(),
+      home: const MenuPage(),
     );
   }
 }

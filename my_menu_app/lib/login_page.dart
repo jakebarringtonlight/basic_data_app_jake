@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_menu_app/menu_page.dart';
 
-class MenuScreen extends StatelessWidget {
-  const MenuScreen({Key? key}) : super(key: key);
+class LoginPage extends StatelessWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +16,7 @@ class MenuScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            
-          ],
-        ),
-      ),
+      body: 
     );
   }
 }
