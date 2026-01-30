@@ -76,49 +76,16 @@ class _CreateLogPageState extends State<CreateLogPage> {
             
             const SizedBox(height: 20),
             TextField(
-              controller: _datetextController,
-              readOnly: true,
+              controller: _summarytextController,
               decoration: InputDecoration(
-                labelText: 'Date',
+                labelText: 'Summary',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.calendar_today_rounded),
+                prefixIcon: const Icon(Icons.title_rounded),
               ),
-              onTap: () async {
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1999),
-                  lastDate: DateTime(2030),
-                );
-
-                if (date == null) return;
-
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.now(),
-                );
-
-                if (time == null) return;
-
-                final dateTime = DateTime(
-                  date.year, 
-                  date.month, 
-                  date.day, 
-                  time.hour, 
-                  time.minute, 
-                );
-                
-                final dateTimeString = "${dateTime.day}/${dateTime.month}/${dateTime.year}  ${time.format(context)}";
-
-                setState(() {
-                  _datetextController.text = dateTimeString;
-                });
-
-              },
             ),
-            
+
             const SizedBox(height: 20),
             TextField(
               controller: _registrationtextController,
@@ -161,18 +128,6 @@ class _CreateLogPageState extends State<CreateLogPage> {
 
             const SizedBox(height: 20),
             TextField(
-              controller: _summarytextController,
-              decoration: InputDecoration(
-                labelText: 'Summary',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                prefixIcon: const Icon(Icons.title_rounded),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-            TextField(
               controller: _techniciantextController,
               decoration: InputDecoration(
                 labelText: 'Technician Name',
@@ -183,6 +138,69 @@ class _CreateLogPageState extends State<CreateLogPage> {
               ),
             ),
 
+            const SizedBox(height: 20),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 56),
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)
+                ),  
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1.5,
+                )
+              ),
+              onPressed: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1999),
+                  lastDate: DateTime(2030),
+                );
+
+                if (date == null) return;
+
+                final time = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+
+                if (time == null) return;
+
+                final dateTime = DateTime(
+                  date.year,
+                  date.month, 
+                  date.day, 
+                  time.hour, 
+                  time.minute, 
+                );
+                
+                final dateTimeString = "${dateTime.day}/${dateTime.month}/${dateTime.year}  ${time.format(context)}";
+
+                setState(() {
+                  _datetextController.text = dateTimeString;
+                });
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded, 
+                    color: Theme.of(context).hintColor,
+                  ),
+                const SizedBox(width: 12),
+                  Text(
+                    _datetextController.text.isEmpty ? "Date" : _datetextController.text,
+                    style: TextStyle(
+                      color: _datetextController.text.isEmpty ? Theme.of(context).hintColor : Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
+                  )
+                ]
+                
+              ),
+            ),
+            
             const SizedBox(height: 20),
             TextField(
               controller: _notestextController,
