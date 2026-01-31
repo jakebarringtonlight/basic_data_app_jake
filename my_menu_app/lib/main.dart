@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'menu_page.dart';
+import 'package:my_menu_app/login_page.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MenuPage(),
+      home: const LoginPage(),
     );
   }
 }

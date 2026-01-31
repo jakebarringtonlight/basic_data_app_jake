@@ -58,18 +58,14 @@ class _CreateLogPageState extends State<CreateLogPage> {
                 );},
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {},
-            ),
-            ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
-              onTap: () {Navigator.push(
+              onTap: () {Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LoginPage(),
                   ),
+                  (route) => false,
                 );},
             ),
           ],
@@ -168,7 +164,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: const Icon(Icons.perm_identity_rounded),
+                prefixIcon: const Icon(Icons.person_2_rounded),
               ),
             ),
 

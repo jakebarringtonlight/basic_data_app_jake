@@ -45,18 +45,14 @@ class MenuPage extends StatelessWidget {
                 );},
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {},
-            ),
-            ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
-              onTap: () {Navigator.push(
+              onTap: () {Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LoginPage(),
                   ),
+                  (route) => false,
                 );},
             ),
           ],
@@ -94,7 +90,6 @@ class MenuPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () {
                 Navigator.push(

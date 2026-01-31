@@ -52,18 +52,14 @@ class _ViewLogPageState extends State<ViewLogPage> {
                 );},
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {},
-            ),
-            ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
-              onTap: () {Navigator.push(
+              onTap: () {Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LoginPage(),
                   ),
+                  (route) => false,
                 );},
             ),
           ],
