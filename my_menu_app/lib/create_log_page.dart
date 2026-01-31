@@ -17,6 +17,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
   final TextEditingController _notestextController = TextEditingController();
 
   String? maintenanceType;
+  String? priority;
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +129,33 @@ class _CreateLogPageState extends State<CreateLogPage> {
               onChanged: (value) {
                 setState(() {
                   maintenanceType = value;
+                });
+              },
+            ),
+
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              initialValue: priority,
+              decoration: InputDecoration(
+                labelText: 'Priority',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.warning_amber_rounded),
+              ),
+              items: [
+                "High",
+                "Medium",
+                "Low",
+              ]
+                  .map((type) => DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  priority = value;
                 });
               },
             ),
