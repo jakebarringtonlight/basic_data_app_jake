@@ -120,9 +120,12 @@ class _ViewLogPageState extends State<ViewLogPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 20),
             if (logs.isEmpty) ...[
               const Text("No logs found.")
+            ],
+            if (error != null) ...[
+              Text(error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 12),
             ]
             else ...
             [
@@ -145,6 +148,26 @@ class _ViewLogPageState extends State<ViewLogPage> {
                       leading: const Icon(Icons.event_note),
                       title: Text("Log $id : $summary"),
                       subtitle: Text("$aircraft_reg, $priority, $created_at"),
+
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline_rounded),
+                        tooltip: "Delete Log",
+                        onPressed: () async {
+                          try {
+                            await api.deleteLog(int.parse(id));
+                            setState(() {
+                              logs.removeAt(index);
+                              error = null;
+                            });
+                          }
+                          catch(e)
+                          {
+                            setState(() {
+                              error = "Delete log failed.";
+                            });
+                          }
+                        },
+                      ),
                     ),
                   );
                 },

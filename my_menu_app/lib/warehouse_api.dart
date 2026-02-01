@@ -104,4 +104,19 @@ class WarehouseApi {
     final data = jsonDecode(response.body) as List<dynamic>;
     return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
   }
+
+  Future<void> deleteLog(int logId) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/v1/logs/$logId'),
+      headers: _authHeaders(),
+    );
+    if (response.statusCode == 200 || response.statusCode == 204)
+    {
+      return;
+    }
+
+    final body = jsonDecode(response.body);
+    final error = body['error'] ?? "Delete log failed.";
+    throw Exception(error);
+  }
 }
