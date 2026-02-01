@@ -32,31 +32,56 @@ class _ViewLogPageState extends State<ViewLogPage> {
       loadingLogs = true;
       error = null;
     });
-
-    try
-    {
+    try {
       final data = await api.listLogs();
-
       if (!mounted) return;
-
       setState(() {
         logs = data;
       });
-
     }
-        catch (exception)
-    {
+        catch (exception) {
       setState(() {
         error = "Loading logs failed $exception";
       });
     }
-    finally
-    {
+    finally {
       setState(() {
         loadingLogs = false;
       });
     }
   }
+
+  Future<void> expandLog(Map<String, dynamic> log) async
+  {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Log ${log['id']}"),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text("Summary: ${log['summary']}"),
+              Text("Aircraft Reg: ${log['aircraft_reg']}"),
+              Text("Maintenance Type: ${log['maintenance_type']}"),
+              Text("Priority: ${log['priority']}"),
+              Text("Technician: ${log['technician_name']}"),
+              Text("Created At: ${log['created_at']}"),
+              Text("Updated At: ${log['updated_at']}"),
+              Text("Notes: ${log['notes']}")
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close_rounded),
+            onPressed: () => Navigator.pop(context),
+          )
+        ]
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
         return Scaffold(
@@ -149,24 +174,36 @@ class _ViewLogPageState extends State<ViewLogPage> {
                       title: Text("Log $id : $summary"),
                       subtitle: Text("$aircraft_reg, $priority, $created_at"),
 
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded),
-                        tooltip: "Delete Log",
-                        onPressed: () async {
-                          try {
-                            await api.deleteLog(int.parse(id));
-                            setState(() {
-                              logs.removeAt(index);
-                              error = null;
-                            });
-                          }
-                          catch(e)
-                          {
-                            setState(() {
-                              error = "Delete log failed.";
-                            });
-                          }
-                        },
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline_rounded),
+                            tooltip: "Delete Log",
+                            onPressed: () async {
+                              try {
+                                await api.deleteLog(int.parse(id));
+                                setState(() {
+                                  logs.removeAt(index);
+                                  error = null;
+                                });
+                              }
+                              catch(e)
+                              {
+                                setState(() {
+                                  error = "Delete log failed.";
+                                });
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.expand_more_rounded),
+                            tooltip: "See more.",
+                            onPressed: () async {
+                              expandLog(log);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   );
