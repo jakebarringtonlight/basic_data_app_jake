@@ -14,3 +14,4 @@ def init_db() -> None:
 if __name__ == "__main__":
     init_db()
     print(f"Initialized database at {DB_PATH}")
+

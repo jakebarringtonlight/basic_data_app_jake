@@ -11,10 +11,12 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS maintenance_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    aircraft_reg TEXT NOT NULL,
+    maintenance_type TEXT NOT NULL,
     priority TEXT NOT NULL,
-    status TEXT NOT NULL,
+    technician_name TEXT,
+    notes TEXT,
     user_id INTEGER,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,10 +38,8 @@ CREATE TABLE IF NOT EXISTS maintenance_log_media (
     )
 );
 
-
 INSERT INTO users (username, password_hash, role)
-VALUES ('jay', 'demo_hash_123', 'admin');
+
+INSERT INTO maintenance_logs (summary, aircraft_reg, maintenance_type, priority, technician_name, created_at, notes)
 
 
-INSERT INTO maintenance_logs (title, description, priority, status, user_id)
-VALUES ('Leaking pipe', 'Pipe leaking under sink in Bay 2', 'high', 'open', last_insert_rowid());

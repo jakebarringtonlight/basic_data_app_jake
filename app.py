@@ -4,11 +4,13 @@ from typing import Any, Dict, Optional
 
 from flask import Flask, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_cors import CORS
 
 API_KEY = "api_warehouse_student_key_1234567890abcdef"
 DB_PATH = "warehouse.db"
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 def get_connection() -> sqlite3.Connection:
@@ -290,3 +292,4 @@ def delete_log(log_id: int):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080)
+

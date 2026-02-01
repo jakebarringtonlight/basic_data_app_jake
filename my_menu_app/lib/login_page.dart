@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final api = WarehouseApi(baseUrl: 'http://10.0.2.2:8080');
+  final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
   
   String? _error;
   bool _attemptingLogin = false;
@@ -98,10 +98,15 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
 
+            if (_error != null) ...[
+              Text(_error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 12),
+            ],
+
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _attemptingLogin ? null : _loginHandler,
-
+              
               child: const Text('Login'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(

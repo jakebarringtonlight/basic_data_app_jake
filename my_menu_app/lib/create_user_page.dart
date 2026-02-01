@@ -15,13 +15,13 @@ class _CreateUserPageState extends State<CreateUserPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   String? role;
-  final api = WarehouseApi(baseUrl: 'http://10.0.2.2:8080');
+  final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
   String? _error;
   bool _createUser = false;
 
   Future<void> _attemptCreateUser() async {
     final username = _usernameController.text.trim();
-    final password = _passwordController.text; // don't trim passwords
+    final password = _passwordController.text.trim();
     final selectedRole = role;
 
     setState(() {
@@ -58,7 +58,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
     }
     catch(e){
       setState(() {
-        _error = "User creation failed.";
+        _error = "User creation failed. $e";
       });
     }
     finally{
@@ -165,6 +165,11 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 });
               },
             ),
+
+            if (_error != null) ...[
+              Text(_error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 12),
+            ],
 
             const SizedBox(height: 20),
             ElevatedButton(
