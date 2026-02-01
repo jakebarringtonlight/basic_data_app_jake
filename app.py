@@ -217,7 +217,7 @@ def create_log():
             """
             INSERT INTO maintenance_logs
                 (summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """,
             (summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id),
         )

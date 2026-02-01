@@ -38,8 +38,4 @@ CREATE TABLE IF NOT EXISTS maintenance_log_media (
     )
 );
 
-INSERT INTO users (username, password_hash, role)
-
-INSERT INTO maintenance_logs (summary, aircraft_reg, maintenance_type, priority, technician_name, created_at, notes)
-
 

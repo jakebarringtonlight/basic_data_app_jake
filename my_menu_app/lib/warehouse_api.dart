@@ -79,7 +79,6 @@ class WarehouseApi {
         'user_id': userId,
       }),
     );
-
     if (response.statusCode != 201) 
     {
       final body = jsonDecode(response.body);
@@ -88,5 +87,21 @@ class WarehouseApi {
     }
 
     return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> listLogs() async {
+    final response = await http.get(
+    Uri.parse('$baseUrl/api/v1/logs'),
+    headers: _authHeaders(),
+    );
+    if (response.statusCode != 200)
+    {
+      final body = jsonDecode(response.body);
+      final error = body['error'] ?? "List logs failed.";
+      throw Exception(error);
+    }
+
+    final data = jsonDecode(response.body) as List<dynamic>;
+    return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
   }
 }

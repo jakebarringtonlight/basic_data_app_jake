@@ -80,7 +80,7 @@ class MenuPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('View/Edit Logs'),
+              child: const Text('View Logs'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,

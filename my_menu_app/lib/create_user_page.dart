@@ -16,8 +16,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
 
   String? role;
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
-  String? _error;
-  bool _createUser = false;
+  String? error;
+  bool createUser = false;
 
   Future<void> _attemptCreateUser() async {
     final username = _usernameController.text.trim();
@@ -25,20 +25,20 @@ class _CreateUserPageState extends State<CreateUserPage> {
     final selectedRole = role;
 
     setState(() {
-      _error = null;
-      _createUser = true;
+      error = null;
+      createUser = true;
     });
     if (username.isEmpty || password.isEmpty) {
       setState((){
-        _error = "Please enter a username and password.";
-        _createUser = false;
+        error = "Please enter a username and password.";
+        createUser = false;
       });
       return;
     }
     if (selectedRole == null || selectedRole.isEmpty) {
       setState(() {
-        _error = "Please select a role.";
-        _createUser = false;
+        error = "Please select a role.";
+        createUser = false;
       });
       return;
     }
@@ -53,12 +53,12 @@ class _CreateUserPageState extends State<CreateUserPage> {
     }
     catch(e){
       setState(() {
-        _error = "User creation failed. $e";
+        error = "User creation failed. $e";
       });
     }
     finally{
       setState(() {
-        _createUser = false;
+        createUser = false;
       });
     }
   }
@@ -162,14 +162,14 @@ class _CreateUserPageState extends State<CreateUserPage> {
               },
             ),
 
-            if (_error != null) ...[
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+            if (error != null) ...[
+              Text(error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 12),
             ],
 
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _createUser? null : _attemptCreateUser,
+              onPressed: createUser? null : _attemptCreateUser,
               child: const Text('Create'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(

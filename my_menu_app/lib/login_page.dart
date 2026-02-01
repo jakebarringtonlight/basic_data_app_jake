@@ -15,19 +15,19 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
   
-  String? _error;
+  String? error;
   bool attemptLogin = false;
 
   Future<void> loginHandler() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     setState(() {
-      _error = null;
+      error = null;
     });
     if (username.isEmpty || password.isEmpty)
     {
       setState(() {
-        _error = "Please enter username password.";
+        error = "Please enter username password.";
         return;
       });
     }
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     catch (exception)
     {
       setState(() {
-        _error = "Login Failed";
+        error = "Login Failed";
       });
     }
     finally
@@ -95,8 +95,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
 
-            if (_error != null) ...[
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+            if (error != null) ...[
+              Text(error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 12),
             ],
 

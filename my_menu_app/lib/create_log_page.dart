@@ -21,7 +21,8 @@ class _CreateLogPageState extends State<CreateLogPage> {
 
   String? maintenanceType;
   String? priority;
-  String? _error;
+  String? error;
+  String? success;
   bool creatingLog = false;
 
   Future<void> createLogHandler() async {
@@ -32,19 +33,19 @@ class _CreateLogPageState extends State<CreateLogPage> {
     final date = _datetextController.text.trim();
 
     setState(() {
-      _error = null;
+      error = null;
     });
 
     if(summary.isEmpty || aircraft_reg.isEmpty || technician_name.isEmpty || notes.isEmpty || date.isEmpty){
       setState(() {
-        _error = "Please fill all fields.";
+        error = "Please fill all fields.";
         return;
       });
     }
     if (maintenanceType == null || priority == null)
     {
       setState(() {
-        _error = "Please fill all dropdowns.";
+        error = "Please fill all dropdowns.";
         return;
       });
     }
@@ -54,11 +55,26 @@ class _CreateLogPageState extends State<CreateLogPage> {
     try
     {
       await api.createLog(summary: summary, aircraftReg: aircraft_reg, maintenanceType: maintenanceType!, priority: priority!, technicianName: technician_name, notes: notes);
+      
+      if(!mounted) return;
+
+      setState(() {
+        success = "Log created.";
+      });
+      _summarytextController.clear();
+      _registrationtextController.clear();
+      _techniciantextController.clear();
+      _notestextController.clear();
+      _datetextController.clear();
+      setState(() {
+        maintenanceType = null;
+        priority = null;
+      });
     }
     catch (exception)
     {
       setState(() {
-        _error = "Log creation failed $exception";
+        error = "Log creation failed $exception";
       });
     }
     finally
@@ -68,7 +84,6 @@ class _CreateLogPageState extends State<CreateLogPage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -294,8 +309,14 @@ class _CreateLogPageState extends State<CreateLogPage> {
               ),
             ),
 
-            if (_error != null) ...[
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+            if (error != null) ...[
+              Text(error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 12),
+            ],
+
+            if (success != null) ...
+            [
+              Text(success!, style: const TextStyle(color: Colors.green)),
               const SizedBox(height: 12),
             ],
 
@@ -309,6 +330,14 @@ class _CreateLogPageState extends State<CreateLogPage> {
                   vertical: 15,
                 ),
               ),
+            ),
+
+            const SizedBox(height: 15),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Back to Menu'),
             ),
           ],
         ),

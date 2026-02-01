@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_menu_app/login_page.dart';
 import 'package:my_menu_app/menu_page.dart';
+import 'package:my_menu_app/warehouse_api.dart';
 
 class ViewLogPage extends StatefulWidget {
   const ViewLogPage({Key? key}) : super(key: key);
@@ -11,13 +12,62 @@ class ViewLogPage extends StatefulWidget {
 
 class _ViewLogPageState extends State<ViewLogPage> {
 
-  List<Map<String, dynamic>> logs = [];
+  final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
 
+  List<Map<String, dynamic>> logs = [];
+  bool loadingLogs = true;
+  String? error;
+
+  @override
+  void initState()
+  {
+    super.initState();
+    loadLogs();
+  }
+
+
+  Future<void> loadLogs() async
+  {
+    setState(() {
+      loadingLogs = true;
+      error = null;
+    });
+
+    try
+    {
+      final data = await api.listLogs();
+
+      if (!mounted) return;
+
+      setState(() {
+        logs = data;
+      });
+
+    }
+        catch (exception)
+    {
+      setState(() {
+        error = "Loading logs failed $exception";
+      });
+    }
+    finally
+    {
+      setState(() {
+        loadingLogs = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
         return Scaffold(
       appBar: AppBar(
-        title: Text('View/Edit Logs'),
+        title: Text('View Logs'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: loadLogs,
+          )
+        ],
         leading: Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.menu),
@@ -65,19 +115,43 @@ class _ViewLogPageState extends State<ViewLogPage> {
           ],
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(20),
-        itemCount: logs.length,
-        itemBuilder: (context, logId){
-        final log = logs[logId];
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.event_note),
-            title: Text(log["id"] ?? ""),
-            subtitle: Text(log["date"] ?? ""),
-          ),
-         );
-        }
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 20),
+            if (logs.isEmpty) ...[
+              const Text("No logs found.")
+            ]
+            else ...
+            [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: logs.length,
+                itemBuilder: (context, index){
+                  final log = logs[index];
+
+                  final id = log["id"]?.toString() ?? "";
+                  final summary = log["summary"]?.toString() ?? "";
+                  final aircraft_reg = log["aircraft_reg"]?.toString() ?? "";
+                  final priority = log["priority"]?.toString() ?? "";
+                  final created_at = log["created_at"]?.toString() ?? "";
+
+                  return Card(
+                    margin: const EdgeInsets.all(12),
+                    child: ListTile(
+                      leading: const Icon(Icons.event_note),
+                      title: Text("Log $id : $summary"),
+                      subtitle: Text("$aircraft_reg, $priority, $created_at"),
+                    ),
+                  );
+                },
+              )
+            ]
+          ]
+        )
       )
     );
   }
