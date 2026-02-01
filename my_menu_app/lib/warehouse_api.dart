@@ -31,6 +31,13 @@ class WarehouseApi {
         'role': role,
       }),
     );
+    
+    if (response.statusCode != 201)
+    {
+      final body = jsonDecode(response.body);
+      final error = body['error'] ?? "Create user failed.";
+      throw Exception(error);
+    }
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 

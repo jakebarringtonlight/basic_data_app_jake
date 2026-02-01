@@ -11,17 +11,17 @@ class CreateUserPage extends StatefulWidget {
 }
 
 class _CreateUserPageState extends State<CreateUserPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   String? role;
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
   String? error;
   bool createUser = false;
 
-  Future<void> _attemptCreateUser() async {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+  Future<void> attemptCreateUser() async {
+    final username = usernameController.text.trim();
+    final password = passwordController.text.trim();
     final selectedRole = role;
 
     setState(() {
@@ -113,7 +113,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
             
             const SizedBox(height: 20),
             TextField(
-              controller: _usernameController,
+              controller: usernameController,
               decoration: InputDecoration(
                 labelText: 'Create Username',
                 border: OutlineInputBorder(
@@ -125,7 +125,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
 
             const SizedBox(height: 20),
             TextField(
-              controller: _passwordController,
+              controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Create Password',
@@ -169,7 +169,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
 
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: createUser? null : _attemptCreateUser,
+              onPressed: createUser? null : attemptCreateUser,
               child: const Text('Create'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
