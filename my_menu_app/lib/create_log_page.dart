@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_menu_app/login_page.dart';
 import 'package:my_menu_app/menu_page.dart';
+import 'package:my_menu_app/warehouse_api.dart';
 
 class CreateLogPage extends StatefulWidget {
   const CreateLogPage({Key? key}) : super(key: key);
@@ -16,8 +17,58 @@ class _CreateLogPageState extends State<CreateLogPage> {
   final TextEditingController _techniciantextController = TextEditingController();
   final TextEditingController _notestextController = TextEditingController();
 
+  final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
+
   String? maintenanceType;
   String? priority;
+  String? _error;
+  bool creatingLog = false;
+
+  Future<void> createLogHandler() async {
+    final summary = _summarytextController.text.trim();
+    final aircraft_reg = _registrationtextController.text.trim();
+    final technician_name = _techniciantextController.text.trim();
+    final notes = _notestextController.text.trim();
+    final date = _datetextController.text.trim();
+
+    setState(() {
+      _error = null;
+    });
+
+    if(summary.isEmpty || aircraft_reg.isEmpty || technician_name.isEmpty || notes.isEmpty || date.isEmpty){
+      setState(() {
+        _error = "Please fill all fields.";
+        return;
+      });
+    }
+    if (maintenanceType == null || priority == null)
+    {
+      setState(() {
+        _error = "Please fill all dropdowns.";
+        return;
+      });
+    }
+    setState(() {
+      creatingLog = true;
+    });
+    try
+    {
+      await api.createLog(summary: summary, aircraftReg: aircraft_reg, maintenanceType: maintenanceType!, priority: priority!, technicianName: technician_name, notes: notes);
+    }
+    catch (exception)
+    {
+      setState(() {
+        _error = "Log creation failed $exception";
+      });
+    }
+    finally
+    {
+      setState(() {
+        creatingLog = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -240,6 +291,23 @@ class _CreateLogPageState extends State<CreateLogPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(Icons.notes_rounded),
+              ),
+            ),
+
+            if (_error != null) ...[
+              Text(_error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 12),
+            ],
+
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: creatingLog ? null : createLogHandler,
+              child: const Text('Create'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 15,
+                ),
               ),
             ),
           ],

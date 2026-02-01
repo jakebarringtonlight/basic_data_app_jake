@@ -68,7 +68,7 @@ def create_user():
     payload = request.get_json(silent=True) or {}
     username = payload.get("username")
     password = payload.get("password")
-    role = payload.get("role", "student")
+    role = payload.get("role", "technician")
 
     if not username or not password:
         return jsonify({"error": "username and password are required"}), 400
@@ -174,7 +174,7 @@ def fetch_log_by_id(log_id: int) -> Optional[Dict[str, Any]]:
     with get_connection() as connection:
         row = connection.execute(
             """
-            SELECT id, title, description, priority, status, user_id, created_at, updated_at
+            SELECT id, summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id, created_at, updated_at
             FROM maintenance_logs
             WHERE id = ?
             """,
@@ -189,7 +189,7 @@ def list_logs():
     with get_connection() as connection:
         rows = connection.execute(
             """
-            SELECT id, title, description, priority, status, user_id, created_at, updated_at
+            SELECT id, summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id, created_at, updated_at
             FROM maintenance_logs
             ORDER BY id
             """
@@ -201,23 +201,25 @@ def list_logs():
 @require_api_key
 def create_log():
     payload = request.get_json(silent=True) or {}
-    title = payload.get("title")
-    description = payload.get("description")
+    summary = payload.get("summary")
+    aircraft_reg = payload.get("aircraft_reg")
+    maintenance_type = payload.get("maintenance_type")
     priority = payload.get("priority")
-    status = payload.get("status")
+    technician_name = payload.get("technician_name")
+    notes = payload.get("notes")
     user_id = payload.get("user_id")
 
-    if not all([title, description, priority, status]):
-        return jsonify({"error": "title, description, priority, and status are required"}), 400
+    if not all([summary, aircraft_reg, maintenance_type, priority, technician_name, notes]):
+        return jsonify({"error": "summary, aircraft_reg, maintenance_type, priority, technician_name and notes are required"}), 400
 
     with get_connection() as connection:
         cursor = connection.execute(
             """
             INSERT INTO maintenance_logs
-                (title, description, priority, status, user_id, created_at, updated_at)
+                (summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """,
-            (title, description, priority, status, user_id),
+            (summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id),
         )
         log_id = cursor.lastrowid
 
@@ -237,30 +239,38 @@ def get_log(log_id: int):
 @require_api_key
 def update_log(log_id: int):
     payload = request.get_json(silent=True) or {}
-    title = payload.get("title")
-    description = payload.get("description")
+    summary = payload.get("summary")
+    aircraft_reg = payload.get("aircraft_reg")
+    maintenance_type = payload.get("maintenance_type")
     priority = payload.get("priority")
-    status = payload.get("status")
+    technician_name = payload.get("technician_name")
+    notes = payload.get("notes")
     user_id = payload.get("user_id")
 
-    if not any([title, description, priority, status, user_id is not None]):
+    if not any([summary, aircraft_reg, maintenance_type, priority, technician_name, notes, user_id is not None]):
         return jsonify({"error": "no fields to update"}), 400
 
     updates = []
     values = []
 
-    if title:
-        updates.append("title = ?")
-        values.append(title)
-    if description:
-        updates.append("description = ?")
-        values.append(description)
+    if summary:
+        updates.append("summary = ?")
+        values.append(summary)
+    if aircraft_reg:
+        updates.append("aircraft_reg = ?")
+        values.append(aircraft_reg)
+    if maintenance_type:
+        updates.append("maintenance_type = ?")
+        values.append(maintenance_type)
     if priority:
         updates.append("priority = ?")
         values.append(priority)
-    if status:
-        updates.append("status = ?")
-        values.append(status)
+    if technician_name:
+        updates.append("technician_name = ?")
+        values.append(technician_name)
+    if notes:
+        updates.append("notes = ?")
+        values.append(notes)
     if user_id is not None:
         updates.append("user_id = ?")
         values.append(user_id)

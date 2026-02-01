@@ -46,27 +46,47 @@ class WarehouseApi {
         'password': password,
       }),
     );
+
+    if (response.statusCode != 200)
+    {
+      final body = jsonDecode(response.body);
+      final error = body['error'] ?? "Login failed.";
+      throw Exception(error);
+    }
+
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> createLog({
-    required String title,
-    required String description,
+    required String summary,
+    required String aircraftReg,
+    required String maintenanceType,
     required String priority,
-    required String status,
-    required int userId,
+    required String technicianName,
+    required String notes,
+    int? userId,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/logs'),
       headers: _authHeaders(),
       body: jsonEncode({
-        'title': title,
-        'description': description,
+        'summary': summary,
+        'aircraft_reg': aircraftReg,
+        'maintenance_type': maintenanceType,
         'priority': priority,
-        'status': status,
+        'technician_name': technicianName,
+        'notes': notes,
         'user_id': userId,
       }),
     );
+
+    if (response.statusCode != 201) 
+    {
+      final body = jsonDecode(response.body);
+      final error = body['error'] ?? "Create log failed.";
+      throw Exception(error);
+    }
+
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 }

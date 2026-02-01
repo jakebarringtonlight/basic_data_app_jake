@@ -28,7 +28,6 @@ class _CreateUserPageState extends State<CreateUserPage> {
       _error = null;
       _createUser = true;
     });
-
     if (username.isEmpty || password.isEmpty) {
       setState((){
         _error = "Please enter a username and password.";
@@ -36,7 +35,6 @@ class _CreateUserPageState extends State<CreateUserPage> {
       });
       return;
     }
-
     if (selectedRole == null || selectedRole.isEmpty) {
       setState(() {
         _error = "Please select a role.";
@@ -44,11 +42,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
       });
       return;
     }
-
-    try{
-      
+    try{  
       await api.createUser(username: username, password: password, role: selectedRole);
-      
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -131,6 +126,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
+              obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Create Password',
                 border: OutlineInputBorder(

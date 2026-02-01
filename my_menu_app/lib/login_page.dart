@@ -16,16 +16,14 @@ class _LoginPageState extends State<LoginPage> {
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
   
   String? _error;
-  bool _attemptingLogin = false;
+  bool attemptLogin = false;
 
-  Future<void> _loginHandler() async {
+  Future<void> loginHandler() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
-
     setState(() {
       _error = null;
     });
-
     if (username.isEmpty || password.isEmpty)
     {
       setState(() {
@@ -33,11 +31,9 @@ class _LoginPageState extends State<LoginPage> {
         return;
       });
     }
-
     setState(() {
-      _attemptingLogin = true;
+      attemptLogin = true;
     });
-
     try
     {
       await api.login(username: username, password: password);
@@ -58,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
     finally
     {
       setState(() {
-        _attemptingLogin = false;
+        attemptLogin = false;
       });
     }
   }
@@ -89,6 +85,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
+              obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(
@@ -105,8 +102,7 @@ class _LoginPageState extends State<LoginPage> {
 
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _attemptingLogin ? null : _loginHandler,
-              
+              onPressed: attemptLogin ? null : loginHandler,
               child: const Text('Login'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
