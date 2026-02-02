@@ -211,26 +211,36 @@ class _ViewLogPageState extends State<ViewLogPage> {
                             tooltip: "Delete Log",
                             onPressed: () async {
                               final offlineId = log['id'] as int;
-                              final serverId = log['server_id'] as int;
+                              final int? serverId = log['server_id'] as int?;
                               try {
                                 if (serverOnline && serverId != null)
                                 {
                                   await api.deleteLog(serverId);
-                                  await offline.deleteLogWithServerId(offlineId);
+                                  await offline.deleteLogOffline(offlineId);
                                 }
                                 else
                                 {
-                                  await offline.deleteLogOffline(int.parse(id));
+                                  await offline.deleteLogOffline(offlineId);
                                 }
-                                setState(() {
-                                  logs.removeAt(index);
-                                  error = null;
-                                });
+                                int indexToRemove = -1;
+                                for (int i = 0; i < logs.length; i++) {
+                                  if (logs[i]['id'] == offlineId) {
+                                    indexToRemove = i;
+                                    break;
+                                  }
+                                }
+                                if (indexToRemove != -1) {
+                                  setState(() {
+                                    logs = List<Map<String, dynamic>>.from(logs);
+                                    logs.removeAt(indexToRemove);
+                                    error = null;
+                                  });
+                                }
                               }
                               catch(e)
                               {
                                 setState(() {
-                                  error = "Delete log failed.";
+                                  error = "Delete log failed. $e";
                                 });
                               }
                             },
