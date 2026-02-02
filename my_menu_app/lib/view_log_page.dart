@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_menu_app/login_page.dart';
 import 'package:my_menu_app/menu_page.dart';
+import 'package:my_menu_app/offline_database.dart';
+import 'package:my_menu_app/server_synchronize.dart';
 import 'package:my_menu_app/warehouse_api.dart';
 
 class ViewLogPage extends StatefulWidget {
@@ -12,11 +14,16 @@ class ViewLogPage extends StatefulWidget {
 
 class _ViewLogPageState extends State<ViewLogPage> {
 
+  final server = ServerSynchronize.instance;
+  final offline = OfflineDatabase.instance;
+
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
 
   List<Map<String, dynamic>> logs = [];
   bool loadingLogs = true;
   String? error;
+  String? info;
+  bool serverOnline = false;
 
   @override
   void initState()
@@ -31,17 +38,32 @@ class _ViewLogPageState extends State<ViewLogPage> {
     setState(() {
       loadingLogs = true;
       error = null;
+      info = null;
     });
     try {
-      final data = await api.listLogs();
-      if (!mounted) return;
+      await server.synchronizeAll();
+
       setState(() {
-        logs = data;
+        serverOnline = true;
+        info = "Server online. Loading all available logs.";
       });
     }
         catch (exception) {
       setState(() {
-        error = "Loading logs failed $exception";
+        serverOnline = false;
+        info = "Server offline. Loading available offline logs until back online.";
+      });
+    }
+    try
+    {
+      final offlineLogs = await offline.getAllLogs();
+      setState(() {
+        logs = offlineLogs;
+      });
+    }
+    catch(exception) {
+      setState(() {
+        error = "Loading logs failed. $exception";
       });
     }
     finally {
@@ -145,15 +167,22 @@ class _ViewLogPageState extends State<ViewLogPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (logs.isEmpty) ...[
-              const Text("No logs found.")
-            ],
+            
             if (error != null) ...[
               Text(error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 12),
-            ]
-            else ...
-            [
+            ],
+            if (info !=null)...[
+              Text(info!, style: const TextStyle(color: Colors.black)),
+              const SizedBox(height: 12),
+            ],
+            if (loadingLogs) ...[
+              const Text("Logs loading...")
+              ] 
+              else if (logs.isEmpty) ...[
+                const Text("No logs found.")
+              ] 
+              else ...[
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -181,8 +210,18 @@ class _ViewLogPageState extends State<ViewLogPage> {
                             icon: const Icon(Icons.delete_outline_rounded),
                             tooltip: "Delete Log",
                             onPressed: () async {
+                              final offlineId = log['id'] as int;
+                              final serverId = log['server_id'] as int;
                               try {
-                                await api.deleteLog(int.parse(id));
+                                if (serverOnline && serverId != null)
+                                {
+                                  await api.deleteLog(serverId);
+                                  await offline.deleteLogWithServerId(offlineId);
+                                }
+                                else
+                                {
+                                  await offline.deleteLogOffline(int.parse(id));
+                                }
                                 setState(() {
                                   logs.removeAt(index);
                                   error = null;

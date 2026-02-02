@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_menu_app/login_page.dart';
 import 'package:my_menu_app/menu_page.dart';
+import 'package:my_menu_app/offline_database.dart';
+import 'package:my_menu_app/server_synchronize.dart';
 import 'package:my_menu_app/warehouse_api.dart';
 
 class CreateLogPage extends StatefulWidget {
@@ -16,6 +18,8 @@ class _CreateLogPageState extends State<CreateLogPage> {
   final TextEditingController _summarytextController = TextEditingController();
   final TextEditingController _techniciantextController = TextEditingController();
   final TextEditingController _notestextController = TextEditingController();
+
+  final ServerSynchronize synchronize = ServerSynchronize.instance;
 
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
 
@@ -51,13 +55,16 @@ class _CreateLogPageState extends State<CreateLogPage> {
     }
     setState(() {
       creatingLog = true;
+      error = null;
+      success = null;
     });
     try
     {
-      await api.createLog(summary: summary, aircraftReg: aircraft_reg, maintenanceType: maintenanceType!, priority: priority!, technicianName: technician_name, notes: notes);
+      final offlineId = await OfflineDatabase.instance.addLog(summary: summary, aircraft_reg: aircraft_reg, maintenance_type: maintenanceType!, priority: priority!, technician_name: technician_name, notes: notes);
       
-      if(!mounted) return;
+      await synchronize.synchronizeLog(offlineId);
 
+      if(!mounted) return;
       setState(() {
         success = "Log created.";
       });
@@ -74,7 +81,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
     catch (exception)
     {
       setState(() {
-        error = "Log creation failed $exception";
+        error = "Log creation failed.";
       });
     }
     finally

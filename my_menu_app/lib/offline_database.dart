@@ -10,11 +10,11 @@ class OfflineDatabase {
   Future<Database> get database async {
     final database = _database;
     if (database != null) return database;
-    _database = await _open();
+    _database = await setup();
     return _database!;
   }
 
-  Future<Database> _open() async {
+  Future<Database> setup() async {
     final path = await getDatabasesPath();
     final databasePath = join(path, 'offline_warehouse.db');
 
@@ -36,13 +36,15 @@ class OfflineDatabase {
           CREATE TABLE maintenance_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             server_id INTEGER,
-            title TEXT NOT NULL,
-            description TEXT NOT NULL,
+            summary TEXT NOT NULL,
+            aircraft_reg TEXT NOT NULL,
+            maintenance_type TEXT NOT NULL,
             priority TEXT NOT NULL,
-            status TEXT NOT NULL,
+            technician_name TEXT,
+            notes TEXT,
             user_id INTEGER,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
             -- offline/sync fields
             is_synced INTEGER NOT NULL DEFAULT 0,
@@ -61,40 +63,44 @@ class OfflineDatabase {
   }
 
   Future<int> addLog({
-    required String title,
-    required String description,
+    required String summary,
+    required String aircraft_reg,
+    required String maintenance_type,
     required String priority,
-    required String status,
+    required String technician_name,
+    required String notes,
     int? userId,
   }) async {
-    final db = await database;
-    return db.insert('maintenance_logs', {
-      'title': title,
-      'description': description,
+    final databaseHandler = await database;
+    return databaseHandler.insert('maintenance_logs', {
+      'summary': summary,
+      'aircraft_reg': aircraft_reg,
+      'maintenance_type': maintenance_type,
       'priority': priority,
-      'status': status,
+      'technician_name': technician_name,
+      'notes': notes,
       'user_id': userId,
-      'created_at': DateTime.now(),
-      'updated_at': DateTime.now(),
+      'created_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
       'is_synced': 0,
       'needs_upload': 1,
     });
   }
 
-  Future<List<Map<String, dynamic>>> getLogs() async {
-    final db = await database;
-    return db.query(
+  Future<List<Map<String, dynamic>>> getAllLogs() async {
+    final databaseHandler = await database;
+    return databaseHandler.query(
       'maintenance_logs',
       orderBy: 'created_at DESC',
     );
   }
 
-  Future<Map<String, dynamic>?> getLogById(int localId) async {
-    final db = await database;
-    final rows = await db.query(
+  Future<Map<String, dynamic>?> getLog(int offlineId) async {
+    final databaseHandler = await database;
+    final rows = await databaseHandler.query(
       'maintenance_logs',
       where: 'id = ?',
-      whereArgs: [localId],
+      whereArgs: [offlineId],
       limit: 1,
     );
     if (rows.isEmpty) return null;
@@ -102,76 +108,81 @@ class OfflineDatabase {
   }
 
   Future<List<Map<String, dynamic>>> getLogsForUpload() async {
-    final db = await database;
-    return db.query(
+    final databaseHandler = await database;
+    return databaseHandler.query(
       'maintenance_logs',
       where: 'needs_upload = 1',
-      orderBy: 'created_at ASC',
     );
   }
 
   Future<int> updateLog({
-    required int localId,
-    String? title,
-    String? description,
+    required int offlineId,
+    String? summary,
+    String? aircraft_reg,
+    String? maintenance_type,
     String? priority,
-    String? status,
+    String? technician_name,
+    String? notes,
     int? userId,
   }) async {
-    final db = await database;
+    final databaseHandler = await database;
 
     final Map<String, Object?> update = {};
-    if (title != null) update['title'] = title;
-    if (description != null) update['description'] = description;
+    if (summary != null) update['summary'] = summary;
+    if (aircraft_reg != null) update['aircraft_reg'] = aircraft_reg;
+    if (maintenance_type != null) update['maintenance_type'] = maintenance_type;
     if (priority != null) update['priority'] = priority;
-    if (status != null) update['status'] = status;
+    if (technician_name != null) update['technician_name'] = technician_name;
+    if (notes != null) update['notes'] = notes;
     if (userId != null) update['user_id'] = userId;
 
     if (update.isEmpty) return 0;
 
-    update['updated_at'] = DateTime.now();
+    update['updated_at'] = DateTime.now().toIso8601String();
     update['needs_upload'] = 1;
     update['is_synced'] = 0;
 
-    return db.update(
+    return databaseHandler.update(
       'maintenance_logs',
       update,
       where: 'id = ?',
-      whereArgs: [localId],
+      whereArgs: [offlineId],
     );
   }
 
-  Future<int> logUploaded({
-    required int localId,
+  Future<int> logUploadSuccess({
+    required int offlineId,
     required int serverId,
   }) async {
-    final db = await database;
-    return db.update(
+    final databaseHandler = await database;
+    return databaseHandler.update(
       'maintenance_logs',
       {
         'server_id': serverId,
         'is_synced': 1,
         'needs_upload': 0,
-        'updated_at': DateTime.now(),
+        'updated_at': DateTime.now().toIso8601String(),
       },
       where: 'id = ?',
-      whereArgs: [localId],
+      whereArgs: [offlineId],
     );
   }
 
-  Future<void> loadLogsFromServer({
+  Future<void> downloadLogs({
     required int serverId,
-    required String title,
-    required String description,
+    required String summary,
+    required String aircraftReg,
+    required String maintenanceType,
     required String priority,
-    required String status,
+    required String technicianName,
+    required String notes,
     int? userId,
     String? createdAt,
     String? updatedAt,
   }) async {
-    final db = await database;
+    final databaseHandler = await database;
     
-    final existing = await db.query(
+    final existing = await databaseHandler.query(
       'maintenance_logs',
       where: 'server_id = ?',
       whereArgs: [serverId],
@@ -179,22 +190,23 @@ class OfflineDatabase {
     );
 
     final row = <String, Object?>{
-      'server_id': serverId,
-      'title': title,
-      'description': description,
+      'summary': summary,
+      'aircraft_reg': aircraftReg,
+      'maintenance_type': maintenanceType,
       'priority': priority,
-      'status': status,
+      'technician_name': technicianName,
+      'notes': notes,
       'user_id': userId,
-      'created_at': createdAt ?? DateTime.now(),
-      'updated_at': updatedAt ?? DateTime.now(),
+      'created_at': createdAt ?? DateTime.now().toIso8601String(),
+      'updated_at': updatedAt ?? DateTime.now().toIso8601String(),
       'is_synced': 1,
       'needs_upload': 0,
     };
 
     if (existing.isEmpty) {
-      await db.insert('maintenance_logs', row);
+      await databaseHandler.insert('maintenance_logs', row);
     } else {
-      await db.update(
+      await databaseHandler.update(
         'maintenance_logs',
         row,
         where: 'server_id = ?',
@@ -203,12 +215,16 @@ class OfflineDatabase {
     }
   }
 
-  Future<void> close() async {
-    final db = _database;
-    if (db != null) {
-      await db.close();
-      _database = null;
-    }
+  Future<int> deleteLogOffline(int offlineId) async
+  {
+    final databaseHandler = await database;
+    return databaseHandler.delete('maintenance_logs', where: 'id = ?', whereArgs: [offlineId]);
+  }
+
+  Future<int> deleteLogWithServerId(int server_id) async
+  {
+    final databaseHandler = await database;
+    return databaseHandler.delete('maintenance_logs', where: 'id = ?', whereArgs: [server_id]);
   }
 
 }
