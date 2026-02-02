@@ -32,7 +32,6 @@ class _ViewLogPageState extends State<ViewLogPage> {
     loadLogs();
   }
 
-
   Future<void> loadLogs() async
   {
     setState(() {
@@ -237,10 +236,10 @@ class _ViewLogPageState extends State<ViewLogPage> {
                                   });
                                 }
                               }
-                              catch(e)
+                              catch(exception)
                               {
                                 setState(() {
-                                  error = "Delete log failed. $e";
+                                  error = "Delete log failed. $exception";
                                 });
                               }
                             },

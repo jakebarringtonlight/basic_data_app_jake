@@ -37,11 +37,8 @@ class MenuPage extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
-              onTap: () { Navigator.push(
+              onTap: () { Navigator.pop(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const MenuPage(),
-                  ),
                 );},
             ),
             ListTile(
