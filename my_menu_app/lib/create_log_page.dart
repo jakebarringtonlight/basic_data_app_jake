@@ -35,53 +35,72 @@ class _CreateLogPageState extends State<CreateLogPage> {
     final technician_name = _techniciantextController.text.trim();
     final notes = _notestextController.text.trim();
     final date = _datetextController.text.trim();
+    final int offlineId;
 
     setState(() {
       error = null;
+      success = null;
     });
 
     if(summary.isEmpty || aircraft_reg.isEmpty || technician_name.isEmpty || notes.isEmpty || date.isEmpty){
       setState(() {
         error = "Please fill all fields.";
-        return;
       });
+      return;
     }
     if (maintenanceType == null || priority == null)
     {
       setState(() {
         error = "Please fill all dropdowns.";
-        return;
       });
+      return;
     }
     setState(() {
       creatingLog = true;
       error = null;
       success = null;
     });
+
     try
     {
-      final offlineId = await OfflineDatabase.instance.addLog(summary: summary, aircraft_reg: aircraft_reg, maintenance_type: maintenanceType!, priority: priority!, technician_name: technician_name, notes: notes);
-      
-      await synchronize.synchronizeLog(offlineId);
-
-      if(!mounted) return;
-      setState(() {
-        success = "Log created.";
-      });
-      _summarytextController.clear();
-      _registrationtextController.clear();
-      _techniciantextController.clear();
-      _notestextController.clear();
-      _datetextController.clear();
-      setState(() {
-        maintenanceType = null;
-        priority = null;
-      });
+      offlineId = await OfflineDatabase.instance.addLog(summary: summary, aircraft_reg: aircraft_reg, maintenance_type: maintenanceType!, priority: priority!, technician_name: technician_name, notes: notes);
     }
     catch (exception)
     {
+      if(!mounted) return;
       setState(() {
-        error = "Log creation failed.";
+        error = "Offline log creation failed. ";
+        creatingLog = false;
+      });
+      return;
+    }
+
+    if(!mounted) return;
+    setState(() {
+      success = "Offline log created.";
+    });
+
+    _summarytextController.clear();
+    _registrationtextController.clear();
+    _techniciantextController.clear();
+    _notestextController.clear();
+    _datetextController.clear();
+    setState(() {
+      maintenanceType = null;
+      priority = null;
+    });
+    try{  
+      await synchronize.synchronizeLog(offlineId);
+      if(!mounted) return;
+      setState(() {
+        success = "Log created and synchronized online.";
+      });
+    }
+    catch(exception)
+    {
+      if(!mounted) return;
+      setState(() {
+        success = "Log created offline, awaiting online connection for synchronization.";
       });
     }
     finally

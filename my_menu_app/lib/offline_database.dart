@@ -190,6 +190,7 @@ class OfflineDatabase {
     );
 
     final row = <String, Object?>{
+      'server_id': serverId,
       'summary': summary,
       'aircraft_reg': aircraftReg,
       'maintenance_type': maintenanceType,
@@ -224,7 +225,7 @@ class OfflineDatabase {
   Future<int> deleteLogWithServerId(int server_id) async
   {
     final databaseHandler = await database;
-    return databaseHandler.delete('maintenance_logs', where: 'id = ?', whereArgs: [server_id]);
+    return databaseHandler.delete('maintenance_logs', where: 'server_id = ?', whereArgs: [server_id]);
   }
 
 }
