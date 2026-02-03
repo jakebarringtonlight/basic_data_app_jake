@@ -11,15 +11,21 @@ class CreateUserPage extends StatefulWidget {
 }
 
 class _CreateUserPageState extends State<CreateUserPage> {
+  // Controllers for the text input boxes
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  // Value from dropdown box
   String? role;
+
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
+
+  // States for the create user frontend and backend
   String? error;
   bool createUser = false;
 
   Future<void> attemptCreateUser() async {
+    // Get the values the user input
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
     final selectedRole = role;
@@ -28,6 +34,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
       error = null;
       createUser = true;
     });
+    // Validation checks
     if (username.isEmpty || password.isEmpty) {
       setState((){
         error = "Please enter a username and password.";
@@ -42,6 +49,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
       });
       return;
     }
+    // Create user
     try{  
       await api.createUser(username: username, password: password, role: selectedRole);
       Navigator.push(

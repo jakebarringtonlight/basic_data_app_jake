@@ -13,28 +13,36 @@ class CreateLogPage extends StatefulWidget {
 }
 
 class _CreateLogPageState extends State<CreateLogPage> {
+  // Controllers for the text input boxes.
   final TextEditingController _datetextController = TextEditingController();
   final TextEditingController _registrationtextController = TextEditingController();
   final TextEditingController _summarytextController = TextEditingController();
   final TextEditingController _techniciantextController = TextEditingController();
   final TextEditingController _notestextController = TextEditingController();
 
+  // Instance of the synchronization class to use
   final ServerSynchronize synchronize = ServerSynchronize.instance;
 
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
 
+  // Values from the drop down boxes
   String? maintenanceType;
   String? priority;
+
+  // States for the create log handler frontend and backend
   String? error;
   String? success;
   bool creatingLog = false;
 
   Future<void> createLogHandler() async {
+    // Get the values that the user inputs
     final summary = _summarytextController.text.trim();
     final aircraft_reg = _registrationtextController.text.trim();
     final technician_name = _techniciantextController.text.trim();
     final notes = _notestextController.text.trim();
     final date = _datetextController.text.trim();
+
+    // Set an offline ID in case connection is down.
     final int offlineId;
 
     setState(() {
@@ -42,12 +50,14 @@ class _CreateLogPageState extends State<CreateLogPage> {
       success = null;
     });
 
+    // Check the text fields are all filled in
     if(summary.isEmpty || aircraft_reg.isEmpty || technician_name.isEmpty || notes.isEmpty || date.isEmpty){
       setState(() {
         error = "Please fill all fields.";
       });
       return;
     }
+    // Check thr dropdowns are both filled in
     if (maintenanceType == null || priority == null)
     {
       setState(() {
@@ -61,6 +71,7 @@ class _CreateLogPageState extends State<CreateLogPage> {
       success = null;
     });
 
+    // Create offline log 
     try
     {
       offlineId = await OfflineDatabase.instance.addLog(summary: summary, aircraft_reg: aircraft_reg, maintenance_type: maintenanceType!, priority: priority!, technician_name: technician_name, notes: notes);
@@ -74,12 +85,12 @@ class _CreateLogPageState extends State<CreateLogPage> {
       });
       return;
     }
-
     if(!mounted) return;
     setState(() {
       success = "Offline log created.";
     });
 
+    // Clear all the text fields since successful
     _summarytextController.clear();
     _registrationtextController.clear();
     _techniciantextController.clear();
@@ -89,6 +100,8 @@ class _CreateLogPageState extends State<CreateLogPage> {
       maintenanceType = null;
       priority = null;
     });
+    
+    // Synchronize log with server
     try{  
       await synchronize.synchronizeLog(offlineId);
       if(!mounted) return;

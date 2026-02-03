@@ -9,15 +9,13 @@ class ServerSynchronize {
 
   final WarehouseApi api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
 
-
+  // Method to synchronize a log
   Future<void> synchronizeLog(int offlineId) async {
     final row = await offline.getLog(offlineId);
     if(row == null) return;
 
     final needsUpload = (row['needs_upload'] as int? ?? 0) == 1;
     if (!needsUpload) return;
-
-    
       final createdLog = await api.createLog(summary: row['summary'], aircraftReg: row['aircraft_reg'], maintenanceType: row['maintenance_type'], 
       priority: row['priority'], technicianName: row['technician_name'], notes: row['notes']);
 
@@ -28,6 +26,7 @@ class ServerSynchronize {
       }
   }
 
+  // Method to upload all offline logs
   Future<void> uploadAllLogs() async
   {
     final pendingLog = await offline.getLogsForUpload();
@@ -38,6 +37,7 @@ class ServerSynchronize {
     }
   }
 
+  // Method to download all online logs
   Future<void> downloadAllLogs() async 
   {
       final onlineLogs = await api.listLogs();
@@ -49,6 +49,7 @@ class ServerSynchronize {
       }
   }
 
+  // Method to upload and download all logs at once to do one big synchronization
   Future<void> synchronizeAll() async
   {
     await uploadAllLogs();

@@ -14,6 +14,7 @@ class OfflineDatabase {
     return _database!;
   }
 
+  // Setup offline database
   Future<Database> setup() async {
     final path = await getDatabasesPath();
     final databasePath = join(path, 'offline_warehouse.db');
@@ -62,6 +63,7 @@ class OfflineDatabase {
     );
   }
 
+  // Method to add log offline
   Future<int> addLog({
     required String summary,
     required String aircraft_reg,
@@ -86,7 +88,7 @@ class OfflineDatabase {
       'needs_upload': 1,
     });
   }
-
+  // Method to get all logs offline
   Future<List<Map<String, dynamic>>> getAllLogs() async {
     final databaseHandler = await database;
     return databaseHandler.query(
@@ -107,6 +109,7 @@ class OfflineDatabase {
     return rows.first;
   }
 
+// Method to get all logs offline that are needing upload
   Future<List<Map<String, dynamic>>> getLogsForUpload() async {
     final databaseHandler = await database;
     return databaseHandler.query(
@@ -114,7 +117,8 @@ class OfflineDatabase {
       where: 'needs_upload = 1',
     );
   }
-
+  // Method to update a log
+  // Not used due to scope and time constraints.
   Future<int> updateLog({
     required int offlineId,
     String? summary,
@@ -150,6 +154,7 @@ class OfflineDatabase {
     );
   }
 
+  //Method for log upload
   Future<int> logUploadSuccess({
     required int offlineId,
     required int serverId,
@@ -168,6 +173,7 @@ class OfflineDatabase {
     );
   }
 
+  // Method to get all logs from online
   Future<void> downloadLogs({
     required int serverId,
     required String summary,
@@ -216,12 +222,14 @@ class OfflineDatabase {
     }
   }
 
+  // Method to delete log offline with offline ID
   Future<int> deleteLogOffline(int offlineId) async
   {
     final databaseHandler = await database;
     return databaseHandler.delete('maintenance_logs', where: 'id = ?', whereArgs: [offlineId]);
   }
 
+  // Method to delete log offline with online ID
   Future<int> deleteLogWithServerId(int server_id) async
   {
     final databaseHandler = await database;

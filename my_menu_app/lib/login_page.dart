@@ -11,19 +11,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Controllers for the text input boxes
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
   
+  //States for the login handler frontend and backend
   String? error;
   bool attemptLogin = false;
 
   Future<void> loginHandler() async {
+    // Get the values the usrr input
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     setState(() {
       error = null;
     });
+    // Validation checks
     if (username.isEmpty || password.isEmpty)
     {
       setState(() {
@@ -34,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       attemptLogin = true;
     });
+    // Login
     try
     {
       await api.login(username: username, password: password);

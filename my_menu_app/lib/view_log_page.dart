@@ -14,17 +14,22 @@ class ViewLogPage extends StatefulWidget {
 
 class _ViewLogPageState extends State<ViewLogPage> {
 
+  // Instance of both online and offline databases
   final server = ServerSynchronize.instance;
   final offline = OfflineDatabase.instance;
 
   final api = WarehouseApi(baseUrl: 'http://127.0.0.1:8080');
 
+  // List to display logs
   List<Map<String, dynamic>> logs = [];
+
+  // States for the view log handler frontend and backend
   bool loadingLogs = true;
   String? error;
   String? info;
   bool serverOnline = false;
 
+  // Set an initial state of the log view
   @override
   void initState()
   {
@@ -32,6 +37,7 @@ class _ViewLogPageState extends State<ViewLogPage> {
     loadLogs();
   }
 
+  // Method to load logs into view
   Future<void> loadLogs() async
   {
     setState(() {
@@ -72,6 +78,7 @@ class _ViewLogPageState extends State<ViewLogPage> {
     }
   }
 
+  // Method to expand log view for full details
   Future<void> expandLog(Map<String, dynamic> log) async
   {
     showDialog(
