@@ -4,6 +4,7 @@ import 'package:my_menu_app/menu_page.dart';
 import 'package:my_menu_app/offline_database.dart';
 import 'package:my_menu_app/server_synchronize.dart';
 import 'package:my_menu_app/warehouse_api.dart';
+import 'package:flutter/foundation.dart';
 
 class CreateLogPage extends StatefulWidget {
   const CreateLogPage({Key? key}) : super(key: key);
@@ -70,6 +71,47 @@ class _CreateLogPageState extends State<CreateLogPage> {
       error = null;
       success = null;
     });
+
+    if (kIsWeb) {
+      try {
+        await api.createLog(
+          summary: summary,
+          aircraftReg: aircraft_reg,
+          maintenanceType: maintenanceType!,
+          priority: priority!,
+          technicianName: technician_name,
+          notes: notes,
+        );
+
+        if(!mounted) return;
+        setState(() {
+          success = "Log created and synchronized online.";
+        });
+
+        _summarytextController.clear();
+        _registrationtextController.clear();
+        _techniciantextController.clear();
+        _notestextController.clear();
+        _datetextController.clear();
+        setState(() {
+          maintenanceType = null;
+          priority = null;
+        });
+      }
+      catch (exception) {
+        if(!mounted) return;
+        setState(() {
+          error = "Offline log creation failed. ";
+        });
+      }
+      finally {
+        if(!mounted) return;
+        setState(() {
+          creatingLog = false;
+        });
+      }
+      return;
+    }
 
     // Create offline log 
     try

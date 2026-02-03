@@ -1,5 +1,6 @@
 import 'package:my_menu_app/offline_database.dart';
 import 'package:my_menu_app/warehouse_api.dart';
+import 'package:flutter/foundation.dart';
 
 class ServerSynchronize {
   ServerSynchronize._();
@@ -11,6 +12,7 @@ class ServerSynchronize {
 
   // Method to synchronize a log
   Future<void> synchronizeLog(int offlineId) async {
+    if (kIsWeb) return;
     final row = await offline.getLog(offlineId);
     if(row == null) return;
 
@@ -29,6 +31,7 @@ class ServerSynchronize {
   // Method to upload all offline logs
   Future<void> uploadAllLogs() async
   {
+    if (kIsWeb) return;
     final pendingLog = await offline.getLogsForUpload();
     for (final row in pendingLog)
     {
@@ -40,6 +43,7 @@ class ServerSynchronize {
   // Method to download all online logs
   Future<void> downloadAllLogs() async 
   {
+      if (kIsWeb) return;
       final onlineLogs = await api.listLogs();
 
       for (final row in onlineLogs)
@@ -52,6 +56,7 @@ class ServerSynchronize {
   // Method to upload and download all logs at once to do one big synchronization
   Future<void> synchronizeAll() async
   {
+    if (kIsWeb) return;
     await uploadAllLogs();
     await downloadAllLogs();
   }

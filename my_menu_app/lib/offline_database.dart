@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
+
 
 class OfflineDatabase {
   OfflineDatabase._();
@@ -8,6 +10,9 @@ class OfflineDatabase {
   static Database? _database;
 
   Future<Database> get database async {
+    if (kIsWeb) {
+      throw UnsupportedError('Offline database is disabled on web');
+    }
     final database = _database;
     if (database != null) return database;
     _database = await setup();
@@ -16,6 +21,9 @@ class OfflineDatabase {
 
   // Setup offline database
   Future<Database> setup() async {
+    if (kIsWeb) {
+      throw UnsupportedError('Offline database is disabled on web');
+    }
     final path = await getDatabasesPath();
     final databasePath = join(path, 'offline_warehouse.db');
 
@@ -73,6 +81,7 @@ class OfflineDatabase {
     required String notes,
     int? userId,
   }) async {
+    if (kIsWeb) return 0;
     final databaseHandler = await database;
     return databaseHandler.insert('maintenance_logs', {
       'summary': summary,
@@ -90,6 +99,7 @@ class OfflineDatabase {
   }
   // Method to get all logs offline
   Future<List<Map<String, dynamic>>> getAllLogs() async {
+    if (kIsWeb) return [];
     final databaseHandler = await database;
     return databaseHandler.query(
       'maintenance_logs',
@@ -98,6 +108,7 @@ class OfflineDatabase {
   }
 
   Future<Map<String, dynamic>?> getLog(int offlineId) async {
+    if (kIsWeb) return null;
     final databaseHandler = await database;
     final rows = await databaseHandler.query(
       'maintenance_logs',
@@ -111,6 +122,7 @@ class OfflineDatabase {
 
 // Method to get all logs offline that are needing upload
   Future<List<Map<String, dynamic>>> getLogsForUpload() async {
+    if (kIsWeb) return [];
     final databaseHandler = await database;
     return databaseHandler.query(
       'maintenance_logs',
@@ -129,6 +141,7 @@ class OfflineDatabase {
     String? notes,
     int? userId,
   }) async {
+    if (kIsWeb) return 0;
     final databaseHandler = await database;
 
     final Map<String, Object?> update = {};
@@ -159,6 +172,7 @@ class OfflineDatabase {
     required int offlineId,
     required int serverId,
   }) async {
+    if (kIsWeb) return 0;
     final databaseHandler = await database;
     return databaseHandler.update(
       'maintenance_logs',
@@ -186,6 +200,7 @@ class OfflineDatabase {
     String? createdAt,
     String? updatedAt,
   }) async {
+    if (kIsWeb) return;
     final databaseHandler = await database;
     
     final existing = await databaseHandler.query(
@@ -225,6 +240,7 @@ class OfflineDatabase {
   // Method to delete log offline with offline ID
   Future<int> deleteLogOffline(int offlineId) async
   {
+    if (kIsWeb) return 0;
     final databaseHandler = await database;
     return databaseHandler.delete('maintenance_logs', where: 'id = ?', whereArgs: [offlineId]);
   }
@@ -232,6 +248,7 @@ class OfflineDatabase {
   // Method to delete log offline with online ID
   Future<int> deleteLogWithServerId(int server_id) async
   {
+    if (kIsWeb) return 0;
     final databaseHandler = await database;
     return databaseHandler.delete('maintenance_logs', where: 'server_id = ?', whereArgs: [server_id]);
   }

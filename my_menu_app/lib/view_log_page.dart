@@ -4,6 +4,7 @@ import 'package:my_menu_app/menu_page.dart';
 import 'package:my_menu_app/offline_database.dart';
 import 'package:my_menu_app/server_synchronize.dart';
 import 'package:my_menu_app/warehouse_api.dart';
+import 'package:flutter/foundation.dart';
 
 class ViewLogPage extends StatefulWidget {
   const ViewLogPage({Key? key}) : super(key: key);
@@ -45,6 +46,32 @@ class _ViewLogPageState extends State<ViewLogPage> {
       error = null;
       info = null;
     });
+
+    if (kIsWeb) {
+      try {
+        final serverLogs = await api.listLogs();
+        setState(() {
+          serverOnline = true;
+          info = "Server online. Loading all available logs.";
+          logs = serverLogs;
+        });
+      }
+      catch (exception) {
+        setState(() {
+          serverOnline = false;
+          info = "Server offline. Loading available offline logs until back online.";
+          error = "Loading logs failed. $exception";
+          logs = [];
+        });
+      }
+      finally {
+        setState(() {
+          loadingLogs = false;
+        });
+      }
+      return;
+    }
+
     try {
       await server.synchronizeAll();
 
@@ -216,9 +243,31 @@ class _ViewLogPageState extends State<ViewLogPage> {
                             icon: const Icon(Icons.delete_outline_rounded),
                             tooltip: "Delete Log",
                             onPressed: () async {
-                              final offlineId = log['id'] as int;
                               final int? serverId = log['server_id'] as int?;
+                              final offlineId = log['id'] as int;
+
                               try {
+                                if (kIsWeb) {
+                                  if (serverId != null) {
+                                    await api.deleteLog(serverId);
+                                  }
+                                  int indexToRemove = -1;
+                                  for (int i = 0; i < logs.length; i++) {
+                                    if (logs[i]['server_id'] == serverId) {
+                                      indexToRemove = i;
+                                      break;
+                                    }
+                                  }
+                                  if (indexToRemove != -1) {
+                                    setState(() {
+                                      logs = List<Map<String, dynamic>>.from(logs);
+                                      logs.removeAt(indexToRemove);
+                                      error = null;
+                                    });
+                                  }
+                                  return;
+                                }
+
                                 if (serverOnline && serverId != null)
                                 {
                                   await api.deleteLog(serverId);
